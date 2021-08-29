@@ -21,3 +21,7 @@
 #define MAT_UNUSED( ... )  static_cast< void >( sizeof( __VA_ARGS__ ) )
 
 #define MAT_UNREACHABLE( )  __builtin_unreachable( )
+
+#define MAT_D( cls )  auto d = static_cast< cls ## Private * >( d_ptr.get( ) )
+
+#define MAT_Q( cls )  auto q = static_cast< cls * >( q_ptr )

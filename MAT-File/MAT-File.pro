@@ -58,4 +58,6 @@ HEADERS += \
     Print.h \
     Swab.hpp \
     Swab.inl \
-    Utils.hpp
+    Utils.hpp \
+    MatFile_p.h \
+    TypeTraits.hpp

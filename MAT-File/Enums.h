@@ -3,9 +3,11 @@
 #include "Macros.h"
 #include "TypeDefs.h"
 
+#include <limits>
+
 namespace mat {
 
-struct MatlabArray;
+struct Array;
 struct CompressedData;
 
 #define MAT_DATA_TYPE( apply ) \
@@ -19,7 +21,7 @@ struct CompressedData;
     apply(  9,  Double,         f64             ) \
     apply( 12,  Int64,          i64             ) \
     apply( 13,  UInt64,         u64             ) \
-    apply( 14,  Matrix,         MatlabArray     ) \
+    apply( 14,  Matrix,         Array           ) \
     apply( 15,  Compressed,     CompressedData  ) \
     apply( 16,  Utf8,           std::byte       ) \
     apply( 17,  Utf16,          char16_t        ) \
@@ -57,26 +59,45 @@ auto to_data_type( ) noexcept -> DataType;
 MAT_DATA_TYPE( MAT_DATA_TYPE_TO )
 #undef MAT_DATA_TYPE_TO
 
+template < DataType data_type >
+struct from_data_type;
+
+template < DataType data_type >
+using from_data_type_t = typename from_data_type< data_type >::value_type;
+
+#define MAT_DATA_TYPE_FROM( value, name, type ) \
+    template < > \
+    struct from_data_type< DataType::name > \
+    { \
+        using value_type = type; \
+    };
+MAT_DATA_TYPE( MAT_DATA_TYPE_FROM )
+#undef MAT_DATA_TYPE_FROM
+
+/* IEEE 754 */
+static_assert( std::numeric_limits< from_data_type_t< DataType::Single > >::is_iec559 );
+static_assert( std::numeric_limits< from_data_type_t< DataType::Double > >::is_iec559 );
+
 #define MAT_ARRAY_CLASS( apply ) \
-    apply(  1,  Cell    ) \
-    apply(  2,  Struct  ) \
-    apply(  3,  Object  ) \
-    apply(  4,  Char    ) \
-    apply(  5,  Sparse  ) \
-    apply(  6,  Double  ) \
-    apply(  7,  Single  ) \
-    apply(  8,  Int8    ) \
-    apply(  9,  UInt8   ) \
-    apply( 10,  Int16   ) \
-    apply( 11,  UInt16  ) \
-    apply( 12,  Int32   ) \
-    apply( 13,  UInt32  ) \
-    apply( 14,  Int64   ) \
-    apply( 15,  UInt64  )
+    apply(  1,  Cell        ) \
+    apply(  2,  Structure   ) \
+    apply(  3,  Object      ) \
+    apply(  4,  Char        ) \
+    apply(  5,  Sparse      ) \
+    apply(  6,  Double      ) \
+    apply(  7,  Single      ) \
+    apply(  8,  Int8        ) \
+    apply(  9,  UInt8       ) \
+    apply( 10,  Int16       ) \
+    apply( 11,  UInt16      ) \
+    apply( 12,  Int32       ) \
+    apply( 13,  UInt32      ) \
+    apply( 14,  Int64       ) \
+    apply( 15,  UInt64      )
 
 #define MAT_ARRAY_CLASS_ENUM( value, name ) \
     name = value,
-enum struct ArrayClass
+enum struct ArrayClass : Bytes< 0 >::value_type
 {
     MAT_ARRAY_CLASS( MAT_ARRAY_CLASS_ENUM )
 };
