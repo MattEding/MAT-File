@@ -3,6 +3,7 @@
 #include "Malloc.h"
 #include "Utils.hpp"
 
+#include <functional>
 #include <type_traits>
 
 #include <cassert>
@@ -13,7 +14,7 @@
 namespace mat {
 
 MatFile::MatFile( )
-    : d_ptr( std::make_unique< MatFilePrivate >( ))
+    : d_ptr( std::make_unique< MatFilePrivate >( ) )
 {
 }
 
@@ -30,6 +31,8 @@ auto MatFile::load( fs::path const & matfile ) -> bool
     {
         return false;
     }
+
+    MAT_ASSERT( matfile.extension( ) == MAT_OS_STR( ".mat" ) );
 
     MAT_D( MatFile );
 

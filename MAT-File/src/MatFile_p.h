@@ -8,11 +8,11 @@ namespace mat {
 class MatFilePrivate
 {
 public:
+    std::ifstream infile_;
+
     MatFilePrivate( ) = default;
 
     ~MatFilePrivate( ) = default;
-
-    std::ifstream infile_;
 
     auto validate_data_type( DataElementTag const & tag,
                              DataType data_type ) -> void;

@@ -10,6 +10,12 @@
 #define MAT_STR_IMPL( x )  #x
 #define MAT_STR( x )  MAT_STR_IMPL( x )
 
+#ifdef _WIN32
+#  define MAT_OS_STR( x )  MAT_CAT( L, x )
+#else
+#  define MAT_OS_STR( x )  ( x )
+#endif
+
 #define MAT_ASSERT( x )  assert( x )
 
 #define MAT_FWD( x )  std::forward< decltype( x ) >( x )
@@ -20,7 +26,11 @@
 
 #define MAT_UNUSED( ... )  static_cast< void >( sizeof( __VA_ARGS__ ) )
 
-#define MAT_UNREACHABLE( )  __builtin_unreachable( )
+#ifdef _WIN32
+#  define MAT_UNREACHABLE( )  __assume( 0 )
+#else
+#  define MAT_UNREACHABLE( )  __builtin_unreachable( )
+#endif
 
 #define MAT_D( cls )  auto d = static_cast< cls ## Private * >( d_ptr.get( ) )
 

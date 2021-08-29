@@ -14,8 +14,7 @@ TEMPLATE = \
     app
 #    lib
 
-#QMAKE_CXXFLAGS += -std=c++17
-QMAKE_CXXFLAGS += -std=c++2a
+QMAKE_CXXFLAGS += -std=c++17
 
 QMAKE_CXXFLAGS += \
     -pedantic \
@@ -33,31 +32,31 @@ CONFIG(release, debug|release) {
     DEFINES += NDEBUG
 }
 
-INCLUDEPATH +=
+INCLUDEPATH += src include
 
 SOURCES += \
-    Main.cpp \
-    MatFile.cpp \
-    Header.cpp \
-    DataElement.cpp \
-    ArrayDataElement.cpp \
-    Malloc.cpp \
-    Enums.cpp \
-    Print.cpp
+    src/ArrayDataElement.cpp \
+    src/DataElement.cpp \
+    src/Enums.cpp \
+    src/Header.cpp \
+    src/Malloc.cpp \
+    src/MatFile.cpp \
+    src/MatFile_p.h \
+    src/Print.cpp \
+    src/Swab.hpp \
+    src/Swab.inl \
+    src/TypeTraits.hpp \
+    src/Utils.hpp \
+    test/Main.cpp
 
 HEADERS += \
-    MatFile.h \
-    TypeDefs.h \
-    Macros.h \
-    Enums.h \
-    Header.h \
-    DataElement.h \
-    ArrayDataElement.h \
-    Malloc.h \
-    TestFiles.hpp \
-    Print.h \
-    Swab.hpp \
-    Swab.inl \
-    Utils.hpp \
-    MatFile_p.h \
-    TypeTraits.hpp
+    include/ArrayDataElement.h \
+    include/DataElement.h \
+    include/Enums.h \
+    include/Header.h \
+    include/Macros.h \
+    include/Malloc.h \
+    include/MatFile.h \
+    include/Print.h \
+    include/TypeDefs.h \
+    test/TestFiles.hpp
