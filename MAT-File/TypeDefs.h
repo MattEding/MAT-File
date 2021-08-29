@@ -1,5 +1,4 @@
-#ifndef TYPEDEFS_H
-#define TYPEDEFS_H
+#pragma once
 
 #include <array>
 #include <filesystem>
@@ -24,10 +23,6 @@ using f64 = double;
 namespace fs = std::filesystem;
 
 template < std::size_t N >
-using Bytes = std::array< char, N >;
-
-inline std::size_t constexpr alignment{ 8 };
+using Bytes = std::array< unsigned char, N >;
 
 } /* mat */
-
-#endif // TYPEDEFS_H

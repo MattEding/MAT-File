@@ -1,72 +1,110 @@
-#ifndef ENUMS_H
-#define ENUMS_H
+#pragma once
 
+#include "Macros.h"
 #include "TypeDefs.h"
 
 namespace mat {
 
-struct CompressedData;
 struct MatlabArray;
+struct CompressedData;
 
-#define DATA_TYPE( apply ) \
-    apply(  1,  miINT8,         i8              ) \
-    apply(  2,  miUINT8,        u8              ) \
-    apply(  3,  miINT16,        i16             ) \
-    apply(  4,  miUINT16,       u16             ) \
-    apply(  5,  miINT32,        i32             ) \
-    apply(  6,  miUINT32,       u32             ) \
-    apply(  7,  miSINGLE,       f32             ) \
-    apply(  9,  miDOUBLE,       f64             ) \
-    apply( 12,  miINT64,        i64             ) \
-    apply( 13,  miUINT64,       u64             ) \
-    apply( 14,  miMATRIX,       MatlabArray     ) \
-    apply( 15,  miCOMPRESSED,   CompressedData  ) \
-    apply( 16,  miUTF8,         unsigned char   ) \
-    apply( 17,  miUTF16,        char16_t        ) \
-    apply( 18,  miUTF32,        char32_t        )
+#define MAT_DATA_TYPE( apply ) \
+    apply(  1,  Int8,           i8              ) \
+    apply(  2,  UInt8,          u8              ) \
+    apply(  3,  Int16,          i16             ) \
+    apply(  4,  UInt16,         u16             ) \
+    apply(  5,  Int32,          i32             ) \
+    apply(  6,  UInt32,         u32             ) \
+    apply(  7,  Single,         f32             ) \
+    apply(  9,  Double,         f64             ) \
+    apply( 12,  Int64,          i64             ) \
+    apply( 13,  UInt64,         u64             ) \
+    apply( 14,  Matrix,         MatlabArray     ) \
+    apply( 15,  Compressed,     CompressedData  ) \
+    apply( 16,  Utf8,           std::byte       ) \
+    apply( 17,  Utf16,          char16_t        ) \
+    apply( 18,  Utf32,          char32_t        )
 
-#define DATA_TYPE_ENUM( value, name, type ) \
+//apply(  8,  _reserved8,     struct _dummy8  ) \
+//apply( 10,  _reserved10,    struct _dummy10 ) \
+//apply( 11,  _reserved11,    struct _dummy11 ) \
+//
+
+#define MAT_DATA_TYPE_ENUM( value, name, type ) \
     name = value,
-enum class DataType
+enum struct DataType : u16
 {
-    DATA_TYPE( DATA_TYPE_ENUM )
+    MAT_DATA_TYPE( MAT_DATA_TYPE_ENUM )
 };
-#undef DATA_TYPE_ENUM
+#undef MAT_DATA_TYPE_ENUM
 
-struct CellArray;
-struct Structure;
-struct Object;
-struct CharacterArray;
-struct SparseArray;
+[[ nodiscard ]]
+auto data_type_to_string( DataType data_type ) noexcept -> std::string_view;
 
 template < typename T >
-struct Array;
+[[ nodiscard ]]
+inline constexpr
+auto to_data_type( ) noexcept -> DataType;
 
-#define ARRAY_TYPE( apply ) \
-    apply(  1,  CellArray,      mxCELL_CLASS    ) \
-    apply(  2,  Structure,      mxSTRUCT_CLASS  ) \
-    apply(  3,  Object,         mxOBJECT_CLASS  ) \
-    apply(  4,  Array< char >,  mxCHAR_CLASS    ) \
-    apply(  5,  SparseArray,    mxSPARSE_CLASS  ) \
-    apply(  6,  Array< f64 >,   mxDOUBLE_CLASS  ) \
-    apply(  7,  Array< f32 >,   mxSINGLE_CLASS  ) \
-    apply(  8,  Array< i8 >,    mxINT8_CLASS    ) \
-    apply(  9,  Array< u8 >,    mxUINT8_CLASS   ) \
-    apply( 10,  Array< i16 >,   mxINT16_CLASS   ) \
-    apply( 11,  Array< u16 >,   mxUINT16_CLASS  ) \
-    apply( 12,  Array< i32 >,   mxINT32_CLASS   ) \
-    apply( 13,  Array< u32 >,   mxUINT32_CLASS  ) \
-    apply( 14,  Array< i64 >,   mxINT64_CLASS   ) \
-    apply( 15,  Array< u64 >,   mxUINT64_CLASS  )
+#define MAT_DATA_TYPE_TO( value, name, type ) \
+    template < > \
+    [[ nodiscard ]] \
+    inline constexpr \
+    auto to_data_type< type >( ) noexcept -> DataType \
+    { \
+        return static_cast< DataType >( value ); \
+    }
+MAT_DATA_TYPE( MAT_DATA_TYPE_TO )
+#undef MAT_DATA_TYPE_TO
 
-#define ARRAY_TYPE_ENUM( value, type, name ) \
+#define MAT_ARRAY_CLASS( apply ) \
+    apply(  1,  Cell    ) \
+    apply(  2,  Struct  ) \
+    apply(  3,  Object  ) \
+    apply(  4,  Char    ) \
+    apply(  5,  Sparse  ) \
+    apply(  6,  Double  ) \
+    apply(  7,  Single  ) \
+    apply(  8,  Int8    ) \
+    apply(  9,  UInt8   ) \
+    apply( 10,  Int16   ) \
+    apply( 11,  UInt16  ) \
+    apply( 12,  Int32   ) \
+    apply( 13,  UInt32  ) \
+    apply( 14,  Int64   ) \
+    apply( 15,  UInt64  )
+
+#define MAT_ARRAY_CLASS_ENUM( value, name ) \
     name = value,
-enum class ArrayType
+enum struct ArrayClass
 {
-    ARRAY_TYPE( ARRAY_TYPE_ENUM )
+    MAT_ARRAY_CLASS( MAT_ARRAY_CLASS_ENUM )
 };
-#undef ARRAY_TYPE_ENUM
+#undef MAT_ARRAY_CLASS_ENUM
+
+[[ nodiscard ]]
+auto array_class_to_string( ArrayClass array_class ) noexcept -> std::string_view;
+
+[[ nodiscard ]]
+auto is_numeric_array( ArrayClass array_class ) noexcept -> bool;
+
+[[ nodiscard ]]
+auto is_character_array( ArrayClass array_class ) noexcept -> bool;
+
+#define MAT_ENDIAN( apply ) \
+    apply( 0, Little ) \
+    apply( 1, Big ) \
+    apply( 2, Native )
+
+#define MAT_ENDIAN_ENUM( value, name ) \
+    name = value,
+enum struct Endian
+{
+    MAT_ENDIAN( MAT_ENDIAN_ENUM )
+};
+#undef MAT_ENDIAN_ENUM
+
+[[ nodiscard ]]
+auto endian_to_string( Endian endian ) noexcept -> std::string_view;
 
 } /* mat */
-
-#endif // ENUMS_H

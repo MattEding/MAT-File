@@ -1,11 +1,14 @@
 CONFIG += \
     c++17 \
     console \
+    no_keywords \
     sdk_no_version_check
 
 CONFIG -= \
     app_bundle \
-    qt
+#    qt
+
+QT += core gui
 
 TEMPLATE = \
     app
@@ -37,7 +40,10 @@ SOURCES += \
     MatFile.cpp \
     Header.cpp \
     DataElement.cpp \
-    ArrayDataElement.cpp
+    ArrayDataElement.cpp \
+    Malloc.cpp \
+    Enums.cpp \
+    Print.cpp
 
 HEADERS += \
     MatFile.h \
@@ -45,7 +51,11 @@ HEADERS += \
     Macros.h \
     Enums.h \
     Header.h \
-    Utils.hpp \
     DataElement.h \
     ArrayDataElement.h \
-    Malloc.h
+    Malloc.h \
+    TestFiles.hpp \
+    Print.h \
+    Swab.hpp \
+    Swab.inl \
+    Utils.hpp

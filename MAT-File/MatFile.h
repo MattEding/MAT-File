@@ -1,13 +1,12 @@
-#ifndef MATFILE_H
-#define MATFILE_H
+#pragma once
 
+#include "ArrayDataElement.h"
 #include "DataElement.h"
+#include "Enums.h"
 #include "Header.h"
 #include "TypeDefs.h"
 
 #include <fstream>
-#include <memory>
-#include <string_view>
 #include <vector>
 
 namespace mat {
@@ -15,7 +14,12 @@ namespace mat {
 class MatFile
 {
 public:
+    Header header;
+    DataElement data_element;
+
     MatFile( );
+
+    MatFile( Endian endian );
 
     ~MatFile( );
 
@@ -24,42 +28,45 @@ public:
 
     auto close( ) -> void;
 
-    [[ nodiscard ]]
-    auto header( ) const -> Header const &;
+private:
+    std::ifstream infile_;
 
-    [[ nodiscard ]]
-    auto header_text( ) const -> std::string_view;
-
-    [[ nodiscard ]]
-    auto subsystem_data_offset( ) const -> u64;
-
-    [[ nodiscard ]]
-    auto version( ) const -> u16;
-
-    [[ nodiscard ]]
-    auto endian( ) const -> std::string_view;
-
-    [[ nodiscard ]]
-    auto data_elements( ) const -> std::vector< DataElement > const &;
+    auto validate_data_type( DataElementTag const & tag,
+                             DataType data_type ) -> void;
 
     auto read( void * field,
                std::streamsize size ) -> void;
 
     template < typename T >
-    auto read( T & field ) -> void
-    {
-        read( &field, sizeof( T ) );
-    }
-
-private:
-    std::ifstream infile_;
-    Header header_;
-    std::vector< DataElement > data_elements_;
+    auto read( T & field ) -> T &;
 
     auto read_header( ) -> void;
-    auto read_data_element( ) -> void;
+
+    auto read_data_element( DataElement & data_element ) -> DataElement &;
+
+    auto read_numeric_array_data_element( NumericArrayDataElement & numeric_array_data_element ) -> NumericArrayDataElement &;
+
+    [[ nodiscard ]]
+    auto read_tag( DataType data_type ) -> DataElementTag;
+
+    [[ nodiscard ]]
+    auto read_tag( ) -> DataElementTag;
+
+    auto read_large_data( LargeDataElement & large_data_element ) -> LargeDataElement &;
+
+    template < typename Vector >
+    auto read_vector_data( Vector & vector,
+                           DataElementTag const & tag ) -> void;
+
+    template < typename Vector >
+    auto read_vector_data( Vector & vector,
+                           DataType data_type ) -> void;
+
+    template < typename Vector >
+    auto read_vector_data( Vector & vector ) -> void;
+
+    template < i64 bits >
+    auto seek_bit_boundary( ) -> void;
 };
 
 } /* mat */
-
-#endif // MATFILE_H

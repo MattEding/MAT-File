@@ -1,33 +1,14 @@
-#ifndef UTILS_HPP
-#define UTILS_HPP
+#pragma once
 
 #include <string_view>
 
-#if __has_include( <unistd.h> )
-#  include <unistd.h>
-#else
-#  error "swab not found"
-#endif
-
 namespace mat {
 
-template < typename Sequence,
-           typename CharT = typename Sequence::value_type >
+template < typename Sequence >
 [[ nodiscard ]] inline constexpr
-auto make_string_view( Sequence const & seq ) noexcept -> std::basic_string_view< CharT >
+auto make_string_view( Sequence const & seq ) noexcept -> std::string_view
 {
-    return { data( seq ), size( seq ) };
-}
-
-template < typename T >
-[[ nodiscard ]] inline
-auto swab( T const & field ) -> T
-{
-    T flipped;
-    ::swab( &field, &flipped, sizeof( T ) );
-    return flipped;
+    return { reinterpret_cast<char const * >( data( seq ) ), size( seq ) };
 }
 
 } /* mat */
-
-#endif // UTILS_HPP
